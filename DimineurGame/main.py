@@ -201,6 +201,8 @@ def handle_stats_screen(screen, grille, stats_data,offset_x,offset_y):
 def main():
     # État pour la page d'accueil
     show_welcome = True
+    # État pour le choix du mode de jeu
+    choose_game_mode = False
     
     while show_welcome:
         # Dessiner la page d'accueil
@@ -235,6 +237,62 @@ def main():
                 if SCREEN_WIDTH//2-70 <= mouse_pos[0] <= SCREEN_WIDTH//2+70 and \
                    SCREEN_HEIGHT//2-25 <= mouse_pos[1] <= SCREEN_HEIGHT//2+25:
                     show_welcome = False
+                    choose_game_mode = True
+                    
+    # choix du mode de jeu solo ou avec un AI
+    while choose_game_mode:
+        screen.blit(background_img, (0, 0))
+        # Titre
+        welcome_font = pygame.font.SysFont("pixel-font.ttf", 60)
+        welcome_text = welcome_font.render("DÉMINEUR", True, ORANGE_SHADOW)
+        welcome_rect = welcome_text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//3))
+        screen.blit(welcome_text, welcome_rect)
+
+        # Bouton Solo
+        solo_font = pygame.font.SysFont('Consolas', 30)
+        solo_text = solo_font.render("SOLO", True, WHITE)
+        solo_rect = solo_text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
+
+        button_width, button_height = 140, 50
+
+        pygame.draw.rect(screen, ORANGE_SHADOW, ( SCREEN_WIDTH // 2 - button_width // 2 , SCREEN_HEIGHT // 2 - button_height // 2 +8, button_width , button_height),border_radius= 10)
+        pygame.draw.rect(screen, bleu_fond, (SCREEN_WIDTH // 2 - button_width // 2,  SCREEN_HEIGHT // 2 - button_height // 2, button_width, button_height), border_radius=10)
+        screen.blit(solo_text, solo_rect)
+
+        # Bouton AI
+        ai_font = pygame.font.SysFont('Consolas', 30)
+        ai_text = ai_font.render("AI", True, WHITE)
+        ai_rect = ai_text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2 + 100))
+
+        pygame.draw.rect(screen, ORANGE_SHADOW, ( SCREEN_WIDTH // 2 - button_width // 2 , SCREEN_HEIGHT // 2 +100 - button_height // 2 +8 , button_width , button_height),border_radius= 10)
+        pygame.draw.rect(screen, bleu_fond, (SCREEN_WIDTH // 2 - button_width // 2 , SCREEN_HEIGHT // 2 +100 - button_height // 2 , button_width , button_height),border_radius=10)
+        screen.blit(ai_text, ai_rect)
+
+        
+        pygame.display.flip()
+        
+        # Gestion des événements
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return
+            
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                if SCREEN_WIDTH//2-70 <= mouse_pos[0] <= SCREEN_WIDTH//2+70 and \
+                   SCREEN_HEIGHT//2-25 <= mouse_pos[1] <= SCREEN_HEIGHT//2+25:
+                    # Lancer le mode solo
+                    choose_game_mode = False
+                   
+                elif SCREEN_WIDTH//2-70 <= mouse_pos[0] <= SCREEN_WIDTH//2+70 and \
+                    SCREEN_HEIGHT//2+75 <= mouse_pos[1] <= SCREEN_HEIGHT//2+125:
+                    # Lancer le mode AI (à implémenter) afficher un messahge que le mode AI n'est pas encore disponible
+                    message_font = pygame.font.SysFont('Consolas', 30)
+                    message_text = message_font.render("dzl Mode AI pas disponible", True, WHITE)
+                    screen.blit(message_text, (SCREEN_WIDTH//2 - 230, SCREEN_HEIGHT//2 + 200))
+                    pygame.display.flip()
+                    pygame.time.delay(2000)
+                       
     start = True
     play = False
     jeu_demarre = False
