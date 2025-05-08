@@ -1,5 +1,6 @@
 
 import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 ROOT = os.getcwd()
 sys.path.insert(1, f'{os.path.dirname(ROOT)}')
