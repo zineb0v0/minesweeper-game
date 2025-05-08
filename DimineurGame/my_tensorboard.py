@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tensorflow.keras.callbacks import TensorBoard
+from keras.callbacks import TensorBoard
 
 class ModifiedTensorBoard(TensorBoard):
 
@@ -7,7 +7,7 @@ class ModifiedTensorBoard(TensorBoard):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.step = 1
-        self.writer = tf.summary.FileWriter(self.log_dir)
+        self.writer = tf.summary.create_file_writer(log_dir)
 
     # Overriding this method to stop creating default log writer
     def set_model(self, model):
@@ -16,7 +16,11 @@ class ModifiedTensorBoard(TensorBoard):
     # Overrided, saves logs with our step number
     # (otherwise every .fit() will start writing from 0th step)
     def on_epoch_end(self, epoch, logs=None):
-        self.update_stats(**logs)
+        logs = logs or {}
+        with self.writer.as_default():
+            for key, value in logs.items():
+                tf.summary.scalar(key, value, step=epoch)
+            self.writer.flush()
 
     # Overrided
     # We train for one batch only, no need to save anything at epoch end

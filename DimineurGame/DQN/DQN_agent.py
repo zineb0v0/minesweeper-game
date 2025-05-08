@@ -57,8 +57,7 @@ class DQNAgent(object):
         self.replay_memory = deque(maxlen=MEM_SIZE)
         self.target_update_counter = 0
 
-        self.tensorboard = ModifiedTensorBoard(
-            log_dir=f'logs\\{model_name}', profile_batch=0)
+        self.tensorboard = ModifiedTensorBoard(log_dir=f"logs/{model_name}")
 
     def get_action(self, state):
         board = state.reshape(1, self.env.ntiles)
