@@ -7,11 +7,7 @@ from DQN.DQN_agent import *
 from DQN.DQN import create_dqn
 from minesweeper_env import MinesweeperEnv
 from constants import *
-from keras.models import load_model
-from creationAI.creation import MinesweeperAgentWeb
 
-model = load_model("model.h5")
-agent = MinesweeperAgentWeb(model)
 
 # Initialisation Pygame
 pygame.init()
