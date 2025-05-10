@@ -7,6 +7,7 @@ from DQN.DQN_agent import *
 from DQN.DQN import create_dqn
 from minesweeper_env import MinesweeperEnv
 from constants import *
+import time
 
 # Initialisation Pygame
 pygame.init()
@@ -323,7 +324,7 @@ def main():
     revealed = 0
     ai_controller = None
     current_turn = PLAYER_TURN  # Player starts first
-
+    ai_thinking_start_time = None
     # Initialize AI if selected
     if ai_mode:
         try:
@@ -361,7 +362,7 @@ def main():
 
         # Indicateur de tour simplifié
         if ai_mode and not grille.game_over:
-            turn_text = "Player Turn" if current_turn == PLAYER_TURN else "AI Turn"
+            turn_text = "Player Turn"   if current_turn == PLAYER_TURN else "AI Turn"
             turn_color = (0, 255, 0) if current_turn == PLAYER_TURN else (255, 0, 0)
             turn_surface = font.render(turn_text, True, turn_color)
             screen.blit(turn_surface, (SCREEN_WIDTH // 2 - 50, 50))
@@ -388,6 +389,7 @@ def main():
 
                 # Gestion du clic joueur
                 if current_turn == PLAYER_TURN and not grille.game_over:
+                    
                     x, y = event.pos
                     if y >= 30:  # Évite la zone du header
                         col = (x - offset_x) // CELL_SIZE
@@ -408,14 +410,22 @@ def main():
 
         # Tour de l'IA (version simplifiée)
         if ai_mode and current_turn == AI_TURN and not grille.game_over:
-            try:
-                row, col = ai_controller.get_ai_move()
-                if not grille.cells[row][col].flagged:
-                    grille.reveal_cell(row, col)
+            
+            if ai_thinking_start_time is None:
+                ai_thinking_start_time = current_time   
+            elif current_time - ai_thinking_start_time > 1000:  # IA pense pendant 1 seconde    
+                ai_thinking_start_time = None
+                try:
+                     # Pause pour simuler le temps de réflexion de l'IA
+                    row, col = ai_controller.get_ai_move()
+                    if not grille.cells[row][col].flagged:
+                        grille.reveal_cell(row, col)
+                        
+                        current_turn = PLAYER_TURN
+                        
+                except Exception as e:
+                    print(f"AI move error: {e}")
                     current_turn = PLAYER_TURN
-            except Exception as e:
-                print(f"AI move error: {e}")
-                current_turn = PLAYER_TURN
 
         # Fin de partie
         if grille.game_over or verifier_victoire(grille, grille_lignes, grille_colonnes):
