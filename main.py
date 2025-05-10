@@ -7,7 +7,7 @@ from DQN.DQN_agent import *
 from DQN.DQN import create_dqn
 from minesweeper_env import MinesweeperEnv
 from constants import *
-
+import time
 
 # Initialisation Pygame
 pygame.init()
@@ -27,6 +27,9 @@ cloud_img1 = pygame.transform.scale(cloud_img, (170, 100))
 cloud_img2 = pygame.transform.scale(cloud_img, (200, 130))
 cloud_img3 = pygame.transform.scale(cloud_img, (350, 290))
 
+AI_TURN = 0
+PLAYER_TURN = 1
+
 
 class AIController:
     def __init__(self, grille):
@@ -40,6 +43,7 @@ class AIController:
         except Exception as e:
             print(f"AI INIT ERROR: {str(e)}")  # Debug
             raise
+
     def create_env_from_grid(self):
         # Crée un environnement basé sur la grille actuelle
         env = MinesweeperEnv(self.grille.grille_lignes,
@@ -51,10 +55,14 @@ class AIController:
 
     def get_ai_move(self):
         state = self.convert_grid_to_state()
-        action = self.agent.get_action(state)
-        row = action // self.grille.grille_colonnes
-        col = action % self.grille.grille_colonnes
-        return row, col
+        while True:
+            action = self.agent.get_action(state)
+            row = action // self.grille.grille_colonnes
+            col = action % self.grille.grille_colonnes
+        
+            # Ne pas jouer sur les cases marquées
+            if not self.grille.cells[row][col].flagged:  
+                return row, col
 
     def convert_grid_to_state(self):
         state = np.zeros((self.grille.grille_lignes, self.grille.grille_colonnes, 1))
@@ -315,49 +323,24 @@ def main():
     clicks = 1
     revealed = 0
     ai_controller = None
-
-    # Activez l'AI si le mode est sélectionné
+    current_turn = PLAYER_TURN  # Player starts first
+    ai_thinking_start_time = None
+    # Initialize AI if selected
     if ai_mode:
-        print("\n=== Initialisation de l'AI ===")
-        print(f"Recherche du modèle: DQN/models/{MODEL_NAME}.h5")
-
-        if not os.path.exists(f'DQN/models/{MODEL_NAME}.h5'):
-            print("ERREUR: Modèle AI introuvable! Désactivation de l'AI.")
+        try:
+            ai_controller = AIController(grille)
+        except Exception as e:
+            print(f"Failed to initialize AI: {e}")
             ai_mode = False
-        else:
-            try:
-                ai_controller = AIController(grille)
-                print("AI initialisée avec succès!")
-                print(f"Taille de la grille: {grille.grille_lignes}x{grille.grille_colonnes}")
-                print(f"Nombre de mines: {grille.num_mines}")
-
-                jeu_demarre = True
-                temps_debut = pygame.time.get_ticks()
-
-            except Exception as e:
-                print(f"ERREUR lors de l'initialisation de l'AI: {str(e)}")
-                ai_mode = False
 
     # Boucle principale
     running = True
     while running:
+        current_time = pygame.time.get_ticks()
+
         # Gestion du temps
         if jeu_demarre and not grille.game_over:
-            temps_ecoule = pygame.time.get_ticks() - temps_debut
-
-            # Mode AI
-            if ai_mode and not grille.game_over:
-                pygame.time.delay(300)  # Délai pour voir les coups
-                row, col = ai_controller.get_ai_move()
-
-                if not grille.cells[row][col].flagged:
-                    if grille.reveal_cell(row, col):
-                        clicks += 1
-                        revealed += 1
-                        if grille.cells[row][col].has_mine:
-                            grille.game_over = True
-                        # Mettre à jour l'environnement AI
-                        ai_controller.env.state_im = ai_controller.convert_grid_to_state()
+            temps_ecoule = current_time - temps_debut
 
         # Affichage
         screen.blit(background_img, (0, 0))
@@ -377,9 +360,12 @@ def main():
         if jeu_demarre:
             afficher_chrono(screen, temps_ecoule)
 
-        if ai_mode:
-            ai_text = font.render("AI MODE", True, (0, 255, 0))
-            screen.blit(ai_text, (SCREEN_WIDTH // 2 - 50, 50))
+        # Indicateur de tour simplifié
+        if ai_mode and not grille.game_over:
+            turn_text = "Player Turn"   if current_turn == PLAYER_TURN else "AI Turn"
+            turn_color = (0, 255, 0) if current_turn == PLAYER_TURN else (255, 0, 0)
+            turn_surface = font.render(turn_text, True, turn_color)
+            screen.blit(turn_surface, (SCREEN_WIDTH // 2 - 50, 50))
 
         draw_control_buttons()
         pygame.display.flip()
@@ -395,40 +381,51 @@ def main():
                 if action == "quit":
                     running = False
                 elif action == "restart":
-                    grille = Grille(grille_lignes, grille_colonnes, num_mines)
-                    jeu_demarre = False
-                    temps_debut = 0
-                    temps_ecoule = 0
-                    clicks = 1
-                    revealed = 0
-                    if ai_mode:
-                        ai_controller = AIController(grille)
+                    main()
+                    return
                 elif action == "menu":
                     main()
                     return
 
-                # Clics sur la grille (seulement en mode manuel)
-                if not ai_mode:
-                    x, y = pygame.mouse.get_pos()
-                    if y >= 30:
+                # Gestion du clic joueur
+                if current_turn == PLAYER_TURN and not grille.game_over:
+                    
+                    x, y = event.pos
+                    if y >= 30:  # Évite la zone du header
                         col = (x - offset_x) // CELL_SIZE
-                        lig = (y - offset_y - 30) // CELL_SIZE
-
-                        if 0 <= lig < grille_lignes and 0 <= col < grille_colonnes and not grille.game_over:
+                        row = (y - offset_y - 30) // CELL_SIZE
+                        
+                        if 0 <= row < grille_lignes and 0 <= col < grille_colonnes:
                             if not jeu_demarre:
                                 jeu_demarre = True
-                                temps_debut = pygame.time.get_ticks()
+                                temps_debut = current_time
+                            
+                            if event.button == 1:  # Clic gauche
+                                if not grille.cells[row][col].flagged:
+                                    grille.reveal_cell(row, col)
+                                    if ai_mode:
+                                        current_turn = AI_TURN
+                            elif event.button == 3:  # Clic droit
+                                grille.put_flag(row, col)
 
-                            if event.button == 3:  # Clic droit
-                                grille.put_flag(lig, col)
-                                clicks += 1
-                            elif event.button == 1:  # Clic gauche
-                                if not grille.cells[lig][col].flagged:
-                                    if grille.reveal_cell(lig, col):
-                                        clicks += 1
-                                        revealed += 1
-                                        if grille.cells[lig][col].has_mine:
-                                            grille.game_over = True
+        # Tour de l'IA (version simplifiée)
+        if ai_mode and current_turn == AI_TURN and not grille.game_over:
+            
+            if ai_thinking_start_time is None:
+                ai_thinking_start_time = current_time   
+            elif current_time - ai_thinking_start_time > 1000:  # IA pense pendant 1 seconde    
+                ai_thinking_start_time = None
+                try:
+                     # Pause pour simuler le temps de réflexion de l'IA
+                    row, col = ai_controller.get_ai_move()
+                    if not grille.cells[row][col].flagged:
+                        grille.reveal_cell(row, col)
+                        
+                        current_turn = PLAYER_TURN
+                        
+                except Exception as e:
+                    print(f"AI move error: {e}")
+                    current_turn = PLAYER_TURN
 
         # Fin de partie
         if grille.game_over or verifier_victoire(grille, grille_lignes, grille_colonnes):
@@ -439,17 +436,13 @@ def main():
                 'efficiency': efficacite,
                 'result': "VICTOIRE !" if grille.victoire else "PERDU !"
             }
-
+            
             # Afficher l'écran de fin
             screen.blit(background_img, (0, 0))
             dessiner_grille(screen, grille, offset_x, offset_y)
             afficher_flags(screen, grille.num_mines - grille.flags_places, grille.num_mines)
             afficher_chrono(screen, stats_data['time'])
-            # Après afficher_chrono()
-            if ai_mode:
-                ai_text = font.render("MODE AI", True, (0, 255, 0))
-                screen.blit(ai_text, (SCREEN_WIDTH // 2 - 50, 50))
-
+            
             # Afficher les stats
             panel_rect = pygame.Rect(50, SCREEN_HEIGHT - 200, SCREEN_WIDTH - 100, 120)
             pygame.draw.rect(screen, (20, 40, 70), panel_rect, border_radius=10)
@@ -490,20 +483,12 @@ def main():
                             waiting = False
                             running = False
                         elif action == "restart":
-                            grille = Grille(grille_lignes, grille_colonnes, num_mines)
-                            jeu_demarre = False
-                            temps_debut = 0
-                            temps_ecoule = 0
-                            clicks = 1
-                            revealed = 0
-                            if ai_mode:
-                                ai_controller = AIController(grille)
-                            waiting = False
+                            main()
+                            return
                         elif action == "menu":
                             main()
                             return
 
     pygame.quit()
-
 if __name__ == "__main__":
     main()
