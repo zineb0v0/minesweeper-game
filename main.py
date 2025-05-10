@@ -213,7 +213,6 @@ def choose_game_mode():
         welcome_text = welcome_font.render("DÉMINEUR", True, ORANGE_SHADOW)
         screen.blit(welcome_text, welcome_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)))
 
-        # Bouton Solo
         button_width, button_height = 140, 50
         solo_rect = pygame.Rect(SCREEN_WIDTH // 2 - button_width // 2, SCREEN_HEIGHT // 2 - button_height // 2,
                                 button_width, button_height)
@@ -223,7 +222,7 @@ def choose_game_mode():
         solo_text = font.render("SOLO", True, WHITE)
         screen.blit(solo_text, solo_text.get_rect(center=solo_rect.center))
 
-        # Bouton AI
+        # Ligne corrigée ici :
         ai_rect = pygame.Rect(SCREEN_WIDTH // 2 - button_width // 2, SCREEN_HEIGHT // 2 + 75 - button_height // 2,
                               button_width, button_height)
         pygame.draw.rect(screen, ORANGE_SHADOW, (ai_rect.x, ai_rect.y + 8, button_width, button_height),
@@ -245,7 +244,6 @@ def choose_game_mode():
                     return True, True
 
     return False, False
-
 
 def choose_difficulty():
     choosing = True
@@ -325,6 +323,8 @@ def main():
     ai_controller = None
     current_turn = PLAYER_TURN  # Player starts first
     ai_thinking_start_time = None
+    perdant = None  # 'joueur' ou 'ia'
+    
     # Initialize AI if selected
     if ai_mode:
         try:
@@ -362,8 +362,8 @@ def main():
 
         # Indicateur de tour simplifié
         if ai_mode and not grille.game_over:
-            turn_text = "Player Turn"   if current_turn == PLAYER_TURN else "AI Turn"
-            turn_color = (0, 255, 0) if current_turn == PLAYER_TURN else (255, 0, 0)
+            turn_text = "Tour Joueur" if current_turn == PLAYER_TURN else "Tour IA"
+            turn_color = (0, 255, 0) if current_turn == PLAYER_TURN else (255, 165, 0)  # Vert ou orange
             turn_surface = font.render(turn_text, True, turn_color)
             screen.blit(turn_surface, (SCREEN_WIDTH // 2 - 50, 50))
 
@@ -389,7 +389,6 @@ def main():
 
                 # Gestion du clic joueur
                 if current_turn == PLAYER_TURN and not grille.game_over:
-                    
                     x, y = event.pos
                     if y >= 30:  # Évite la zone du header
                         col = (x - offset_x) // CELL_SIZE
@@ -403,38 +402,60 @@ def main():
                             if event.button == 1:  # Clic gauche
                                 if not grille.cells[row][col].flagged:
                                     grille.reveal_cell(row, col)
-                                    if ai_mode:
+                                    if grille.game_over:
+                                        perdant = 'joueur'
+                                    elif verifier_victoire(grille, grille_lignes, grille_colonnes):
+                                        grille.victoire = True
+                                    elif ai_mode:
                                         current_turn = AI_TURN
                             elif event.button == 3:  # Clic droit
                                 grille.put_flag(row, col)
 
-        # Tour de l'IA (version simplifiée)
+        # Tour de l'IA
         if ai_mode and current_turn == AI_TURN and not grille.game_over:
-            
             if ai_thinking_start_time is None:
                 ai_thinking_start_time = current_time   
             elif current_time - ai_thinking_start_time > 1000:  # IA pense pendant 1 seconde    
                 ai_thinking_start_time = None
                 try:
-                     # Pause pour simuler le temps de réflexion de l'IA
                     row, col = ai_controller.get_ai_move()
                     if not grille.cells[row][col].flagged:
                         grille.reveal_cell(row, col)
-                        
+                        if grille.game_over:
+                            perdant = 'ia'
+                        elif verifier_victoire(grille, grille_lignes, grille_colonnes):
+                            grille.victoire = True
                         current_turn = PLAYER_TURN
-                        
                 except Exception as e:
                     print(f"AI move error: {e}")
                     current_turn = PLAYER_TURN
 
         # Fin de partie
-        if grille.game_over or verifier_victoire(grille, grille_lignes, grille_colonnes):
+        if grille.game_over or grille.victoire:
             efficacite = (revealed / clicks) * 100 if clicks > 0 else 0
+            
+            # Déterminer le message de résultat
+            if grille.victoire:
+                if ai_mode and current_turn == AI_TURN:
+                    result_text = "L'IA A GAGNÉ !"
+                    result_color = (0, 255, 0)  # Vert
+                else:
+                    result_text = "VOUS AVEZ GAGNÉ !"
+                    result_color = (0, 255, 0)  # Vert
+            else:
+                if perdant == 'ia':
+                    result_text = "L'IA A PERDU !"
+                    result_color = (255, 165, 0)  # Orange
+                else:
+                    result_text = "VOUS AVEZ PERDU !"
+                    result_color = (255, 0, 0)  # Rouge
+            
             stats_data = {
                 'time': temps_ecoule,
                 'clicks': clicks,
                 'efficiency': efficacite,
-                'result': "VICTOIRE !" if grille.victoire else "PERDU !"
+                'result': result_text,
+                'color': result_color
             }
             
             # Afficher l'écran de fin
@@ -462,9 +483,8 @@ def main():
                 y += 25
 
             result_font = pygame.font.SysFont('Arial', 24, bold=True)
-            result_color = (0, 255, 0) if "VICTOIRE" in stats_data['result'] else (255, 0, 0)
-            result_text = result_font.render(stats_data['result'], True, result_color)
-            screen.blit(result_text, (panel_rect.centerx - 30, panel_rect.y + 10))
+            result_text = result_font.render(stats_data['result'], True, stats_data['color'])
+            screen.blit(result_text, (panel_rect.centerx - 70, panel_rect.y + 10))
 
             draw_control_buttons()
             pygame.display.flip()
