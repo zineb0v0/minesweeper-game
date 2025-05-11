@@ -436,19 +436,32 @@ def main():
             
             # Déterminer le message de résultat
             if grille.victoire:
+                winning_sound = pygame.mixer.Sound("sounds/victory.wav")
                 if ai_mode and current_turn == AI_TURN:
                     result_text = "L'IA A GAGNÉ !"
                     result_color = (0, 255, 0)  # Vert
+                    # son de victoire
+                    winning_sound.play()
+                    
                 else:
                     result_text = "VOUS AVEZ GAGNÉ !"
                     result_color = (0, 255, 0)  # Vert
+                    # son de victoire
+                    winning_sound.play()
+                    
             else:
+                losing_sound = pygame.mixer.Sound("sounds/defeat.wav")
                 if perdant == 'ia':
                     result_text = "L'IA A PERDU !"
                     result_color = (255, 165, 0)  # Orange
+                    # son de défaite
+                    losing_sound.play()
                 else:
                     result_text = "VOUS AVEZ PERDU !"
                     result_color = (255, 0, 0)  # Rouge
+                    # son de défaite
+                    losing_sound.play()
+                    
             
             stats_data = {
                 'time': temps_ecoule,
