@@ -5,7 +5,7 @@ from DQN_agent import *
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-# intake MinesweeperEnv parameters, beginner mode by default
+# intake MinesweeperEnv parameters, beginner mode by default 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a DQN to play Minesweeper')
     parser.add_argument('--width', type=int, default=9,

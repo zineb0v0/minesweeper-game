@@ -3,9 +3,10 @@ import os
 import numpy as np
 from resultats import *
 from grille import Grille
+from DQN import DQN_agent
 from DQN.DQN_agent import *
 from DQN.DQN import create_dqn
-from minesweeper_env import MinesweeperEnv
+from DQN.minesweeper_env import MinesweeperEnv
 from constants import *
 import time
 
@@ -269,9 +270,9 @@ def choose_difficulty():
                                 button_width, button_height)
 
         # Dessiner les boutons
-        for rect, text, y_offset in [(easy_rect, "Facile", 0),
-                                     (medium_rect, "Moyen", 75),
-                                     (hard_rect, "Difficile", 150)]:
+        for rect, text, y_offset in [(easy_rect, "Easy", 0),
+                                     (medium_rect, "Standard", 75),
+                                     (hard_rect, "Challenging", 150)]:
             pygame.draw.rect(screen, ORANGE_SHADOW, (rect.x, rect.y + 8, button_width, button_height), border_radius=10)
             pygame.draw.rect(screen, bleu_fond, rect, border_radius=10)
             btn_text = font.render(text, True, WHITE)
@@ -287,9 +288,9 @@ def choose_difficulty():
                 if easy_rect.collidepoint(pygame.mouse.get_pos()):
                     return (9, 9, 10)  # Facile
                 elif medium_rect.collidepoint(pygame.mouse.get_pos()):
-                    return (14, 14, 30)  # Moyen
+                    return (12, 12, 30)  # Moyen
                 elif hard_rect.collidepoint(pygame.mouse.get_pos()):
-                    return (16, 16, 50)  # Difficile
+                    return (15, 15, 50)  # Difficile
 
     return None
 
@@ -362,10 +363,13 @@ def main():
 
         # Indicateur de tour simplifié
         if ai_mode and not grille.game_over:
-            turn_text = "Tour Joueur" if current_turn == PLAYER_TURN else "Tour IA"
-            turn_color = (0, 255, 0) if current_turn == PLAYER_TURN else (255, 165, 0)  # Vert ou orange
+            turn_text = "Player's Turn" if current_turn == PLAYER_TURN else "AI's Turn" 
+            turn_color = (255, 255, 255) if current_turn == PLAYER_TURN else (255, 255, 255)  # Vert ou orange
             turn_surface = font.render(turn_text, True, turn_color)
-            screen.blit(turn_surface, (SCREEN_WIDTH // 2 - 50, 50))
+            rect = pygame.Rect(125, 85, 220, 50)
+            pygame.draw.rect(screen, bleu_fond, rect, border_radius=10)
+            texte_rect = turn_surface.get_rect(center=rect.center)
+            screen.blit(turn_surface, texte_rect)
 
         draw_control_buttons()
         pygame.display.flip()
@@ -381,8 +385,13 @@ def main():
                 if action == "quit":
                     running = False
                 elif action == "restart":
-                    main()
-                    return
+                    grille = Grille(grille_lignes, grille_colonnes, num_mines)
+                    jeu_demarre = False
+                    temps_debut = 0
+                    temps_ecoule = 0
+                    clicks = 1
+                    revealed = 0
+                    continue
                 elif action == "menu":
                     main()
                     return
@@ -485,9 +494,9 @@ def main():
             stats_font = pygame.font.SysFont('Arial', 20)
             y = panel_rect.y + 25
             stats = [
-                f"Temps: {temps_ecoule / 1000:.3f} sec",
-                f"Clics: {clicks}",
-                f"Efficacité: {efficacite:.0f}%"
+                f"Time: {temps_ecoule / 1000:.3f} sec",
+                f"Clicks: {clicks}",
+                f"Efficiency: {efficacite:.0f}%"
             ]
 
             for stat in stats:

@@ -3,9 +3,9 @@ import numpy as np
 import warnings
 import random
 from collections import deque
-from minesweeper_env import *
+from .minesweeper_env import *
 # use my_tensorboard2.py if using tensorflow v2+, use my_tensorboard.py otherwise
-from my_tensorboard2 import *
+from .my_tensorboard2 import *
 from tensorflow import keras
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, Dense, Flatten
