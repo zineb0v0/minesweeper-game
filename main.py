@@ -409,6 +409,8 @@ def main():
                                 temps_debut = current_time
                             
                             if event.button == 1:  # Clic gauche
+                                # le son de révéler une case
+                                
                                 if not grille.cells[row][col].flagged:
                                     grille.reveal_cell(row, col)
                                     if grille.game_over:
@@ -416,16 +418,27 @@ def main():
                                     elif verifier_victoire(grille, grille_lignes, grille_colonnes):
                                         grille.victoire = True
                                     elif ai_mode:
+                                        # le son de révéler une case
+                                        reveal_move_sound = pygame.mixer.Sound("sounds/reveal_move.wav")
+                                        reveal_move_sound.play()
                                         current_turn = AI_TURN
                             elif event.button == 3:  # Clic droit
+                                # le son de poser un drapeau
+                                flag_sound = pygame.mixer.Sound("sounds/put_flag.wav")
+                                flag_sound.play()
                                 grille.put_flag(row, col)
+                                current_turn = AI_TURN if ai_mode else PLAYER_TURN
 
         # Tour de l'IA
         if ai_mode and current_turn == AI_TURN and not grille.game_over:
+            
             if ai_thinking_start_time is None:
                 ai_thinking_start_time = current_time   
             elif current_time - ai_thinking_start_time > 1000:  # IA pense pendant 1 seconde    
                 ai_thinking_start_time = None
+                # le son de ai joue 
+                ai_move_sound = pygame.mixer.Sound("sounds/ai_move.wav")
+                ai_move_sound.play()
                 try:
                     row, col = ai_controller.get_ai_move()
                     if not grille.cells[row][col].flagged:
@@ -459,7 +472,7 @@ def main():
                     winning_sound.play()
                     
             else:
-                losing_sound = pygame.mixer.Sound("sounds/defeat.wav")
+                losing_sound = pygame.mixer.Sound("sounds/defeat.mp3")
                 if perdant == 'ia':
                     result_text = "L'IA A PERDU !"
                     result_color = (255, 165, 0)  # Orange
