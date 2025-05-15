@@ -410,6 +410,8 @@ def main():
                             
                             if event.button == 1:  # Clic gauche
                                 # le son de révéler une case
+                                reveal_move_sound = pygame.mixer.Sound("sounds/reveal_move.wav")
+                                reveal_move_sound.play()
                                 
                                 if not grille.cells[row][col].flagged:
                                     grille.reveal_cell(row, col)
@@ -418,9 +420,6 @@ def main():
                                     elif verifier_victoire(grille, grille_lignes, grille_colonnes):
                                         grille.victoire = True
                                     elif ai_mode:
-                                        # le son de révéler une case
-                                        reveal_move_sound = pygame.mixer.Sound("sounds/reveal_move.wav")
-                                        reveal_move_sound.play()
                                         current_turn = AI_TURN
                             elif event.button == 3:  # Clic droit
                                 # le son de poser un drapeau
@@ -460,13 +459,13 @@ def main():
             if grille.victoire:
                 winning_sound = pygame.mixer.Sound("sounds/victory.wav")
                 if ai_mode and current_turn == AI_TURN:
-                    result_text = "L'IA A GAGNÉ !"
+                    result_text = "The AI WIN !"
                     result_color = (0, 255, 0)  # Vert
                     # son de victoire
                     winning_sound.play()
                     
                 else:
-                    result_text = "VOUS AVEZ GAGNÉ !"
+                    result_text = "YOU WIN !"
                     result_color = (0, 255, 0)  # Vert
                     # son de victoire
                     winning_sound.play()
@@ -474,12 +473,12 @@ def main():
             else:
                 losing_sound = pygame.mixer.Sound("sounds/defeat.mp3")
                 if perdant == 'ia':
-                    result_text = "L'IA A PERDU !"
+                    result_text = "The AI LOOSE !"
                     result_color = (255, 165, 0)  # Orange
                     # son de défaite
                     losing_sound.play()
                 else:
-                    result_text = "VOUS AVEZ PERDU !"
+                    result_text = "YOU LOOSE !"
                     result_color = (255, 0, 0)  # Rouge
                     # son de défaite
                     losing_sound.play()
