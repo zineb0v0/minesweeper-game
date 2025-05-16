@@ -23,41 +23,44 @@ class Grille:
 
     def put_flag(self, lig, col):
         if 0 <= lig < self.grille_lignes and 0 <= col < self.grille_colonnes:
-            if not self.cells[lig][col].revealed :
-                cell = self.cells[lig][col]
+            cell = self.cells[lig][col]
+            if not cell.revealed:
                 if not cell.flagged and self.flags_places < MAX_FLAGS:
                     cell.flagged = True
                     self.flags_places += 1
+                    return True
                 elif cell.flagged:
                     cell.flagged = False
                     self.flags_places -= 1
+                    return True
+        return False
+
 
     def reveal_cell(self, lig, col):
-        #  Gestion du premier clic : Initialisation du champ de mines
+        if not (0 <= lig < self.grille_lignes and 0 <= col < self.grille_colonnes):
+            return False  # Invalid coordinates
+
         if self.first_click:
-            # Création du champ de mines avec dimensions et nombre de mines
-            self.champ = ChampDeMines(self.grille_lignes,self.num_mines)
-            print("khdam")
-            # Génération des mines en évitant la cellule du premier clic (lig, col)
+            self.champ = ChampDeMines(self.grille_lignes, self.num_mines)
             self.champ.generer_mines((lig, col))
-            # Marquage des cellules minées dans la grille
             for mine in self.champ.mines:
                 self.cells[mine.x][mine.y].has_mine = True
-            self.first_click = False  # Le jeu est maintenant initialisé
-        #  Vérifications préalables
-        if self.cells[lig][col].revealed or self.cells[lig][col].flagged:
-            return  # Ne rien faire si cellule déjà révélée ou marquée
-        #  Gestion des cas après révélation
-        if self.cells[lig][col].has_mine:
-            # Case minée : fin du jeu
-            self.cells[lig][col].revealed = True
-            # Révélation de toutes les mines (affichage)
+            self.first_click = False
+
+        cell = self.cells[lig][col]
+        if cell.revealed or cell.flagged:
+            return False  # Already revealed or flagged, nothing happened
+
+        if cell.has_mine:
+            cell.revealed = True
             self.game_over = True
             for mine in self.champ.mines:
                 self.cells[mine.x][mine.y].revealed = True
         else:
-            # Case vide : révélation récursive des cases adjacentes
             self._reveal_recursive(lig, col)
+
+        return True  # A valid reveal occurred
+
 
     def _reveal_recursive(self, lig, col):
         """Révèle récursivement les cellules vides."""

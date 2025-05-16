@@ -408,28 +408,30 @@ def main():
                                 jeu_demarre = True
                                 temps_debut = current_time
                             
-                            if event.button == 1:  # Clic gauche
-                                # le son de révéler une case
-                                
+                            if event.button == 1:  # Left click
                                 if not grille.cells[row][col].flagged:
-                                    grille.reveal_cell(row, col)
-                                    if grille.game_over:
-                                        perdant = 'joueur'
-                                    elif verifier_victoire(grille, grille_lignes, grille_colonnes):
-                                        grille.victoire = True
-                                    elif ai_mode:
-                                        # le son de révéler une case
-                                        reveal_move_sound = pygame.mixer.Sound("sounds/reveal_move.wav")
-                                        reveal_move_sound.play()
-                                        current_turn = AI_TURN
-                            elif event.button == 3:  # Clic droit
-                                # le son de poser un drapeau
-                                flag_sound = pygame.mixer.Sound("sounds/put_flag.wav")
-                                flag_sound.play()
-                                grille.put_flag(row, col)
-                                current_turn = AI_TURN if ai_mode else PLAYER_TURN
+                                    was_revealed = grille.reveal_cell(row, col)
+                                    if was_revealed:
+                                        clicks += 1
+                                        revealed += 1
+                                        if grille.game_over:
+                                            perdant = 'joueur'
+                                        elif verifier_victoire(grille, grille_lignes, grille_colonnes):
+                                            grille.victoire = True
+                                        elif ai_mode:
+                                            reveal_move_sound = pygame.mixer.Sound("sounds/reveal_move.wav")
+                                            reveal_move_sound.play()
+                                            current_turn = AI_TURN
 
-        # Tour de l'IA
+                            elif event.button == 3:  # Right click
+                                if not grille.cells[row][col].revealed:
+                                    was_flagged = grille.put_flag(row, col)
+                                    if was_flagged:
+                                        flag_sound = pygame.mixer.Sound("sounds/put_flag.wav")
+                                        flag_sound.play()
+                                        if ai_mode:
+                                            current_turn = AI_TURN
+
         if ai_mode and current_turn == AI_TURN and not grille.game_over:
             
             if ai_thinking_start_time is None:
