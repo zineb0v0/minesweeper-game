@@ -14,7 +14,7 @@ def parse_args():
                         help='height of the board')
     parser.add_argument('--n_mines', type=int, default=10,
                         help='Number of mines on the board')
-    parser.add_argument('--episodes', type=int, default=100_000,
+    parser.add_argument('--episodes', type=int, default=1000,
                         help='Number of episodes to train on')
     parser.add_argument('--model_name', type=str, default=f'{MODEL_NAME}',
                         help='Name of model')
@@ -24,10 +24,10 @@ def parse_args():
 params = parse_args()
 
 AGG_STATS_EVERY = 100 # calculate stats every 100 games for tensorboard
-SAVE_MODEL_EVERY = 10_000 # save model and replay every 10,000 episodes
+SAVE_MODEL_EVERY = 200 # save model and replay every 200 episodes
 
 def main():
-    env = MinesweeperEnv(params.width, params.height, params.n_mines)
+    env = MinesweeperEnv(params.width, params.height, params.n_mines) #crée une grille de démineur simulée.
     agent = DQNAgent(env, params.model_name)
 
     progress_list, wins_list, ep_rewards = [], [], []
