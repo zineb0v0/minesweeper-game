@@ -1,4 +1,5 @@
 import argparse, pickle
+import os  # Ensure os is imported
 from tqdm import tqdm
 from tensorflow.keras.models import load_model
 from DQN_agent import *
@@ -23,11 +24,23 @@ def parse_args():
 
 params = parse_args()
 
+<<<<<<< HEAD
 AGG_STATS_EVERY = 100 # calculate stats every 100 games for tensorboard
 SAVE_MODEL_EVERY = 200 # save model and replay every 200 episodes
 
 def main():
     env = MinesweeperEnv(params.width, params.height, params.n_mines) #crée une grille de démineur simulée.
+=======
+AGG_STATS_EVERY = 100  # calculate stats every 100 games for tensorboard
+SAVE_MODEL_EVERY = 100  # save model and replay every 100 episodes
+
+def main():
+    # Create directories if they don't exist
+    os.makedirs("replay", exist_ok=True)
+    os.makedirs("models", exist_ok=True)
+
+    env = MinesweeperEnv(params.width, params.height, params.n_mines)
+>>>>>>> 6d6e66b1376f56322c5523059b5473b96bad6f09
     agent = DQNAgent(env, params.model_name)
 
     progress_list, wins_list, ep_rewards = [], [], []
@@ -55,7 +68,7 @@ def main():
 
             n_clicks += 1
 
-        progress_list.append(env.n_progress) # n of non-guess moves
+        progress_list.append(env.n_progress)  # n of non-guess moves
         ep_rewards.append(episode_reward)
 
         if env.n_wins > past_n_wins:
@@ -72,19 +85,22 @@ def main():
             med_reward = round(np.median(ep_rewards[-AGG_STATS_EVERY:]), 2)
 
             agent.tensorboard.update_stats(
-                progress_med = med_progress,
-                winrate = win_rate,
-                reward_med = med_reward,
-                learn_rate = agent.learn_rate,
-                epsilon = agent.epsilon)
+                progress_med=med_progress,
+                winrate=win_rate,
+                reward_med=med_reward,
+                learn_rate=agent.learn_rate,
+                epsilon=agent.epsilon)
 
-            print(f'Episode: {episode}, Median progress: {med_progress}, Median reward: {med_reward}, Win rate : {win_rate}')
+            print(f'Episode: {episode}, Median progress: {med_progress}, Median reward: {med_reward}, Win rate: {win_rate}')
 
         if not episode % SAVE_MODEL_EVERY:
-            with open(f'replay/{MODEL_NAME}.pkl', 'wb') as output:
+            replay_file = f'replay/{params.model_name}.pkl'
+            model_file = f'models/{params.model_name}.h5'
+            
+            with open(replay_file, 'wb') as output:
                 pickle.dump(agent.replay_memory, output)
 
-            agent.model.save(f'models/{MODEL_NAME}.h5')
+            agent.model.save(model_file)
 
 if __name__ == "__main__":
     main()
