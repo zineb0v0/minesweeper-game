@@ -33,6 +33,7 @@ def main():
     os.makedirs("models", exist_ok=True)
 
     env = MinesweeperEnv(params.width, params.height, params.n_mines)
+
     agent = DQNAgent(env, params.model_name)
 
     progress_list, wins_list, ep_rewards = [], [], []
