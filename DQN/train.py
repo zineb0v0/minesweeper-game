@@ -15,7 +15,7 @@ def parse_args():
                         help='height of the board')
     parser.add_argument('--n_mines', type=int, default=10,
                         help='Number of mines on the board')
-    parser.add_argument('--episodes', type=int, default=1000,
+    parser.add_argument('--episodes', type=int, default=5000,
                         help='Number of episodes to train on')
     parser.add_argument('--model_name', type=str, default=f'{MODEL_NAME}',
                         help='Name of model')
@@ -24,8 +24,8 @@ def parse_args():
 
 params = parse_args()
 
-AGG_STATS_EVERY = 100  # calculate stats every 100 games for tensorboard
-SAVE_MODEL_EVERY = 100  # save model and replay every 100 episodes
+AGG_STATS_EVERY = 1000  # calculate stats every 100 games for tensorboard
+SAVE_MODEL_EVERY = 1000  # save model and replay every 100 episodes
 
 def main():
     # Create directories if they don't exist
