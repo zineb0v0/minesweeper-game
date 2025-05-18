@@ -4,7 +4,6 @@ import warnings
 import random
 from collections import deque
 from .minesweeper_env import *
-# use my_tensorboard2.py if using tensorflow v2+, use my_tensorboard.py otherwise
 from .my_tensorboard2 import *
 from tensorflow import keras
 from tensorflow.keras.models import Sequential
@@ -12,7 +11,7 @@ from tensorflow.keras.layers import Conv2D, Dense, Flatten
 from tensorflow.keras.optimizers import Adam
 
 
-def create_dqn(learn_rate, input_dims, n_actions, conv_units, dense_units):
+def create_dqn(learn_rate, input_dims, n_actions, conv_units, dense_units): #Cette fonction crée un réseau de neurones pour prédire les actions à partir d’un état de la grille.
     model = Sequential([
                 Conv2D(conv_units, (3,3), activation='relu', padding='same', input_shape=input_dims),
                 Conv2D(conv_units, (3,3), activation='relu', padding='same'),

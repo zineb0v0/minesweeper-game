@@ -462,13 +462,13 @@ def main():
             if grille.victoire:
                 winning_sound = pygame.mixer.Sound("sounds/victory.wav")
                 if ai_mode and current_turn == AI_TURN:
-                    result_text = "L'IA A GAGNÉ !"
+                    result_text = "IA WON !"
                     result_color = (0, 255, 0)  # Vert
                     # son de victoire
                     winning_sound.play()
                     
                 else:
-                    result_text = "VOUS AVEZ GAGNÉ !"
+                    result_text = "YOU WON !"
                     result_color = (0, 255, 0)  # Vert
                     # son de victoire
                     winning_sound.play()
@@ -476,12 +476,12 @@ def main():
             else:
                 losing_sound = pygame.mixer.Sound("sounds/defeat.mp3")
                 if perdant == 'ia':
-                    result_text = "L'IA A PERDU !"
+                    result_text = "IA LOST !"
                     result_color = (255, 165, 0)  # Orange
                     # son de défaite
                     losing_sound.play()
                 else:
-                    result_text = "VOUS AVEZ PERDU !"
+                    result_text = "YOU LOST !"
                     result_color = (255, 0, 0)  # Rouge
                     # son de défaite
                     losing_sound.play()
@@ -540,8 +540,13 @@ def main():
                             waiting = False
                             running = False
                         elif action == "restart":
-                            main()
-                            return
+                            grille = Grille(grille_lignes, grille_colonnes, num_mines)
+                            jeu_demarre = False
+                            temps_debut = 0
+                            temps_ecoule = 0
+                            clicks = 1
+                            revealed = 0
+                            waiting = False
                         elif action == "menu":
                             main()
                             return

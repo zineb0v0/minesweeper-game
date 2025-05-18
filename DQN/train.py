@@ -25,7 +25,7 @@ def parse_args():
 params = parse_args()
 
 AGG_STATS_EVERY = 1000  # calculate stats every 100 games for tensorboard
-SAVE_MODEL_EVERY = 1000  # save model and replay every 100 episodes
+SAVE_MODEL_EVERY = 200  # save model and replay every 500 episodes
 
 def main():
     # Create directories if they don't exist
