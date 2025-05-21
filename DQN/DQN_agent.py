@@ -6,7 +6,7 @@ from collections import deque
 from .minesweeper_env import *
 from .my_tensorboard2 import *
 from tensorflow import keras
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Conv2D, Dense, Flatten
 from tensorflow.keras.optimizers import Adam
 
@@ -41,7 +41,7 @@ MEM_SIZE_MIN = 1_000 # min number of moves in replay buffer
 
 # Learning settings
 BATCH_SIZE = 64
-learn_rate = 0.01
+learn_rate = 0.001
 LEARN_DECAY = 0.99975
 LEARN_MIN = 0.001
 DISCOUNT = 0.1 #gamma
@@ -66,13 +66,32 @@ class DQNAgent(object):
         # Deep Q-learning Parameters
         self.discount = DISCOUNT
         self.learn_rate = learn_rate
-        self.epsilon = epsilon
-        self.model = create_dqn(
-            self.learn_rate, self.env.state_im.shape, self.env.ntiles, conv_units, dense_units)
+        self.epsilon = epsilon 
 
-        # target model - this is what we predict against every step
+        model_path = os.path.join("DQN","models", f"{model_name}.h5")
+
+        print(f"Current working directory: {os.getcwd()}")
+        print(f"Attempting to load model from: {os.path.abspath(model_path)}")
+        print(f"Input shape: {self.env.state_im.shape}, Output shape: {self.env.ntiles}")
+
+        # Vérifier si le modèle pré-entraîné existe
+        try:
+            if os.path.exists(model_path):
+                # Charger le modèle avec custom_objects pour résoudre 'mse'
+                self.model = keras.models.load_model(model_path, custom_objects={'mse': keras.losses.mean_squared_error})
+                print(f"Loaded pre-trained model from {model_path}")
+                self.model.summary()  # Afficher l'architecture du modèle chargé
+            else:
+                raise FileNotFoundError(f"Model file not found at {model_path}")
+        except Exception as e:
+            print(f"Error loading model from {model_path}: {e}. Creating new DQN model.")
+            self.model = create_dqn(
+                self.learn_rate, self.env.state_im.shape, self.env.ntiles, conv_units, dense_units)
+            self.model.summary()  # Afficher l'architecture du nouveau modèle
+
+        #Target model - this is what we predict against every step
         self.target_model = create_dqn(
-            self.learn_rate, self.env.state_im.shape, self.env.ntiles, conv_units, dense_units)
+        self.learn_rate, self.env.state_im.shape, self.env.ntiles, conv_units, dense_units)
         self.target_model.set_weights(self.model.get_weights())
 
         self.replay_memory = deque(maxlen=MEM_SIZE)

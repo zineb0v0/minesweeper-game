@@ -15,7 +15,7 @@ def parse_args():
                         help='height of the board')
     parser.add_argument('--n_mines', type=int, default=10,
                         help='Number of mines on the board')
-    parser.add_argument('--episodes', type=int, default=5000,
+    parser.add_argument('--episodes', type=int, default=20000,
                         help='Number of episodes to train on')
     parser.add_argument('--model_name', type=str, default=f'{MODEL_NAME}',
                         help='Name of model')
@@ -57,8 +57,8 @@ def main():
             episode_reward += reward
 
             agent.update_replay_memory((current_state, action, reward, new_state, done))
-            agent.train(done)
-
+            if done:
+                agent.train(done)
             n_clicks += 1
 
         progress_list.append(env.n_progress)  # n of non-guess moves
