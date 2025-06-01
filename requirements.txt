@@ -1,0 +1,4 @@
+pygame
+numpy
+tqdm
+tensorflow>=2.0
