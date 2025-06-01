@@ -1,11 +1,15 @@
-MinesweeperAI – AI-Powered Minesweeper Game with Deep Reinforcement Learning
-image
+### **MinesweeperAI – AI-Powered Minesweeper Game with Deep Reinforcement Learning**
 
-Overview MinesweeperAI is a desktop-based application that combines the classic Minesweeper game with Artificial Intelligence capable of learning to play it autonomously. Developed as part of an academic project, it leverages Deep Q-Learning (DQN) to enable the agent to navigate the grid, avoid mines, and maximize rewards through trial and error. The platform is structured with clear modularity: game engine, AI model, training pipeline, and visual interface — ensuring extensibility and clarity for future improvements.
+
+![image](https://github.com/user-attachments/assets/2ba7bf64-5cb7-439d-8602-abbf251948d6)
+
+Overview
+MinesweeperAI is a desktop-based application that combines the classic Minesweeper game with Artificial Intelligence capable of learning to play it autonomously. Developed as part of an academic project, it leverages Deep Q-Learning (DQN) to enable the agent to navigate the grid, avoid mines, and maximize rewards through trial and error. The platform is structured with clear modularity: game engine, AI model, training pipeline, and visual interface — ensuring extensibility and clarity for future improvements.
 
 This project was developed during the 2024/2025 academic year as part of a Computer Science curriculum.
 
-🎯 Features Classic Minesweeper Gameplay: Enjoy the traditional game with a fully functioning board, flags, and mine logic.
+🎯 Features
+Classic Minesweeper Gameplay: Enjoy the traditional game with a fully functioning board, flags, and mine logic.
 
 AI-Powered Agent: The AI learns to play Minesweeper via Deep Reinforcement Learning using a Deep Q-Network (DQN).
 
@@ -18,8 +22,7 @@ Sound & UI Feedback: Includes sound effects and visual feedback for win/loss/gam
 Replay Memory: Saves gameplay experience for training the AI.
 
 🗂 Project Structure
-
- 
+<pre> 
   .
 ├── DQN
 │   ├── DQN.py
@@ -66,7 +69,10 @@ Replay Memory: Saves gameplay experience for training the AI.
 ├── minesweeper.log
 ├── my_tensorboard.py
 
-🧠 How the AI Works The AI agent uses a Deep Q-Network (DQN) with an ε-greedy policy. It interacts with the environment (grid), receives rewards for safe moves, and penalties for hitting mines. The Q-values are learned through backpropagation based on the agent’s experience.
+</pre>
+
+🧠 How the AI Works
+The AI agent uses a Deep Q-Network (DQN) with an ε-greedy policy. It interacts with the environment (grid), receives rewards for safe moves, and penalties for hitting mines. The Q-values are learned through backpropagation based on the agent’s experience.
 
 Core Concepts:
 
@@ -80,7 +86,12 @@ Neural Network: Fully connected layers to approximate Q-values.
 
 Replay Buffer: Store past moves for batch training.
 
-🚀 Getting Started Prerequisites Python 3.8+ pip TensorFlow / Keras pygame
+🚀 Getting Started
+Prerequisites
+Python 3.8+
+pip
+TensorFlow / Keras
+pygame
 
 NumPy
 
