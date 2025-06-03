@@ -173,24 +173,78 @@ def check_button_click(pos):
         return "menu"
     return None
 
+def show_rules_screen():
+    showing_rules = True
+    while showing_rules:
+        screen.blit(background_img, (0, 0))
+        
+        # Titre
+        title_font = pygame.font.SysFont("pixel-font.ttf", 60)
+        title_text = title_font.render("RULES OF THE GAME", True, ORANGE_SHADOW)
+        screen.blit(title_text, title_text.get_rect(center=(SCREEN_WIDTH // 2, 80)))
+
+        # Règles du jeu
+        rules_font = pygame.font.SysFont(None, 24)
+        rules = [
+            "1. Uncover all safe cells",
+            "2. Left click = reveal",
+            "3. Right click = flag/unflag",
+            "4. Numbers = nearby mines",
+            "5. Hit a mine = you lose",
+            "6. AI mode: play in turns",
+            "                  Good luck!"
+        ]
+
+        y_pos = 150
+        for rule in rules:
+            rule_text = rules_font.render(rule, True, WHITE)
+            screen.blit(rule_text, (100, y_pos))
+            y_pos += 40
+
+        # Bouton Retour
+        button_width, button_height = 140, 50
+        back_rect = pygame.Rect(SCREEN_WIDTH // 2 - button_width // 2, SCREEN_HEIGHT - 100,
+                               button_width, button_height)
+        pygame.draw.rect(screen, ORANGE_SHADOW, (back_rect.x, back_rect.y + 8, button_width, button_height),
+                         border_radius=10)
+        pygame.draw.rect(screen, bleu_fond, back_rect, border_radius=10)
+        back_text = font.render("RETURN", True, WHITE)
+        screen.blit(back_text, back_text.get_rect(center=back_rect.center))
+
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return False
+            if event.type == pygame.MOUSEBUTTONDOWN and back_rect.collidepoint(pygame.mouse.get_pos()):
+                return True
 
 def show_welcome_screen():
     show_welcome = True
     while show_welcome:
         screen.blit(background_img, (0, 0))
         welcome_font = pygame.font.SysFont("pixel-font.ttf", 60)
-        welcome_text = welcome_font.render("DÉMINEUR", True, ORANGE_SHADOW)
+        welcome_text = welcome_font.render("DEMINER", True, ORANGE_SHADOW)
         screen.blit(welcome_text, welcome_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)))
 
         # Bouton Start
         button_width, button_height = 140, 50
         start_rect = pygame.Rect(SCREEN_WIDTH // 2 - button_width // 2, SCREEN_HEIGHT // 2 - button_height // 2,
-                                 button_width, button_height)
+                               button_width, button_height)
         pygame.draw.rect(screen, ORANGE_SHADOW, (start_rect.x, start_rect.y + 8, button_width, button_height),
                          border_radius=10)
         pygame.draw.rect(screen, bleu_fond, start_rect, border_radius=10)
         start_text = font.render("START", True, WHITE)
         screen.blit(start_text, start_text.get_rect(center=start_rect.center))
+
+        # Bouton Règles
+        rules_rect = pygame.Rect(SCREEN_WIDTH // 2 - button_width // 2, SCREEN_HEIGHT // 2 + 80,
+                               button_width, button_height)
+        pygame.draw.rect(screen, ORANGE_SHADOW, (rules_rect.x, rules_rect.y + 8, button_width, button_height),
+                         border_radius=10)
+        pygame.draw.rect(screen, bleu_fond, rules_rect, border_radius=10)
+        rules_text = font.render("RULES", True, WHITE)
+        screen.blit(rules_text, rules_text.get_rect(center=rules_rect.center))
 
         pygame.display.flip()
 
@@ -198,8 +252,14 @@ def show_welcome_screen():
             if event.type == pygame.QUIT:
                 return False, False
 
-            if event.type == pygame.MOUSEBUTTONDOWN and start_rect.collidepoint(pygame.mouse.get_pos()):
-                return True, True
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if start_rect.collidepoint(pygame.mouse.get_pos()):
+                    return True, True
+                elif rules_rect.collidepoint(pygame.mouse.get_pos()):
+                    if show_rules_screen():  # Si l'utilisateur revient des règles
+                        continue
+                    else:  # Si l'utilisateur quitte depuis l'écran des règles
+                        return False, False
 
     return False, False
 
