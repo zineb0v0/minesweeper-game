@@ -3,8 +3,8 @@ import numpy as np
 import warnings
 import random
 from collections import deque
-from minesweeper_env import *
-from my_tensorboard2 import *
+from .minesweeper_env import *
+from .my_tensorboard2 import *
 from tensorflow import keras
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Conv2D, Dense, Flatten
