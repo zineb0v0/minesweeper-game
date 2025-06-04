@@ -5,7 +5,7 @@
 ###  **Aperçu**
 ![image](https://github.com/user-attachments/assets/edfc8046-5b1e-49e7-b336-05897fd97d70)
 
-Ce projet combine le jeu classique de Démineur avec une intelligence artificielle capable d'apprendre à y jouer de manière autonome. Développée dans le cadre d’un projet académique, elle utilise l’algorithme **Deep Q-Learning (DQN)** pour permettre à un agent de parcourir la grille, éviter les mines et maximiser ses récompenses par l’apprentissage par essai-erreur. La plateforme est construite de manière modulaire  moteur de jeu, modèle d’IA, pipeline d’entraînement et interface visuelle  ce qui garantit une bonne lisibilité du code et une extensibilité pour de futures améliorations.
+Ce projet combine le jeu classique de **Démineur** avec une intelligence artificielle capable d'apprendre à y jouer de manière autonome. Développée dans le cadre d’un projet académique, elle utilise l’algorithme **Deep Q-Learning (DQN)** pour permettre à un agent de parcourir la grille, éviter les mines et maximiser ses récompenses par l’apprentissage par essai-erreur. La plateforme est construite de manière modulaire  moteur de jeu, modèle d’IA, pipeline d’entraînement et interface visuelle  ce qui garantit une bonne lisibilité du code et une extensibilité pour de futures améliorations.
 
 Ce projet a été développé durant l’année universitaire **2024/2025**, dans le cadre du module de Modelisation Avancee et Theorie des Graphes
 
@@ -108,6 +108,10 @@ pip install -r requirements.txt
 ```
 
 2. **Lancer le projet**
-pour lancer le jeu exécutez le fichier principal `main.py` 
+    
+pour lancer le jeu exécutez le fichier principal `main.py`
+
+---
+Nous tenons à remercier Monsieur Stephen Lee pour son dépôt https://github.com/sdlee94/Minesweeper-AI-Reinforcement-Learning, qui nous a vraiment aidés à comprendre comment intégrer le Deep Q-Network (DQN) dans notre projet de Démineur
 
 
