@@ -1,27 +1,26 @@
-### **MinesweeperAI – AI-Powered Minesweeper Game with Deep Reinforcement Learning**
+
+# **Le jeu Démineur avec intégration de l’IA**
 
 
-![image](https://github.com/user-attachments/assets/2ba7bf64-5cb7-439d-8602-abbf251948d6)
+###  **Aperçu**
+![image](https://github.com/user-attachments/assets/edfc8046-5b1e-49e7-b336-05897fd97d70)
 
-Overview
-MinesweeperAI is a desktop-based application that combines the classic Minesweeper game with Artificial Intelligence capable of learning to play it autonomously. Developed as part of an academic project, it leverages Deep Q-Learning (DQN) to enable the agent to navigate the grid, avoid mines, and maximize rewards through trial and error. The platform is structured with clear modularity: game engine, AI model, training pipeline, and visual interface — ensuring extensibility and clarity for future improvements.
+Ce projet combine le jeu classique de Démineur avec une intelligence artificielle capable d'apprendre à y jouer de manière autonome. Développée dans le cadre d’un projet académique, elle utilise l’algorithme **Deep Q-Learning (DQN)** pour permettre à un agent de parcourir la grille, éviter les mines et maximiser ses récompenses par l’apprentissage par essai-erreur. La plateforme est construite de manière modulaire  moteur de jeu, modèle d’IA, pipeline d’entraînement et interface visuelle  ce qui garantit une bonne lisibilité du code et une extensibilité pour de futures améliorations.
 
-This project was developed during the 2024/2025 academic year as part of a Computer Science curriculum.
+Ce projet a été développé durant l’année universitaire **2024/2025**, dans le cadre du module de Modelisation Avancee et Theorie des Graphes
 
-🎯 Features
-Classic Minesweeper Gameplay: Enjoy the traditional game with a fully functioning board, flags, and mine logic.
 
-AI-Powered Agent: The AI learns to play Minesweeper via Deep Reinforcement Learning using a Deep Q-Network (DQN).
+###  **Fonctionnalités**
 
-Training Pipeline: Train the agent with train.py, including replay memory, exploration strategy, and reward shaping.
+* **Jeu de Démineur classique** : Profitez du jeu traditionnel avec une grille fonctionnelle, des drapeaux et une logique complète de gestion des mines.
+* **Agent intelligent** : L’IA apprend à jouer au Démineur grâce à l’apprentissage par renforcement profond via un **Deep Q-Network (DQN)**.
+* **Pipeline d'entraînement** : Entraînez l’agent avec `train.py`, incluant une mémoire de rejouabilité, une stratégie d’exploration et une adaptation des récompenses.
+* **Suivi via TensorBoard** : Suivi en temps réel des performances et de la perte via **TensorBoard**.
+* **Feedback sonore et visuel** : Inclut des effets sonores et des retours visuels pour les victoires, les défaites et la progression du jeu.
+* **Mémoire de rejouabilité** : Sauvegarde les expériences de jeu pour améliorer l’apprentissage de l’IA.
 
-Visual TensorBoard Metrics: Real-time performance and loss monitoring via TensorBoard.
 
-Sound & UI Feedback: Includes sound effects and visual feedback for win/loss/game progress.
-
-Replay Memory: Saves gameplay experience for training the AI.
-
-🗂 Project Structure
+🗂 Structure de Projet 
 <pre> 
   .
 ├── DQN
@@ -71,42 +70,44 @@ Replay Memory: Saves gameplay experience for training the AI.
 
 </pre>
 
-🧠 How the AI Works
-The AI agent uses a Deep Q-Network (DQN) with an ε-greedy policy. It interacts with the environment (grid), receives rewards for safe moves, and penalties for hitting mines. The Q-values are learned through backpropagation based on the agent’s experience.
 
-Core Concepts:
+**Comment fonctionne l’IA**
 
-States: Representation of the current grid.
+L’agent IA utilise un Deep Q-Network (DQN) avec une politique ε-greedy. Il interagit avec l’environnement (la grille), reçoit des récompenses pour les coups sûrs et des pénalités lorsqu’il touche une mine. Les valeurs Q sont apprises par rétropropagation en fonction de l’expérience de l’agent.
 
-Actions: Choose a cell to click.
+**Concepts clés :**
 
-Rewards: +10 for safe click, -50 for mine, +100 for win.
+* États : Représentation de la grille actuelle.
+* Actions : Choisir une cellule à cliquer.
+* Récompenses :+10 pour une victoire, -10 pour une défaite (clic sur une mine), +1 pour un clic utile (progrès), -1 pour un clic au hasard ou sans progrès..
+* Réseau de neurones : Couches entièrement connectées pour approximer les valeurs Q.
+* Replay Buffer : Stocke les coups passés pour l’entraînement par batch.
 
-Neural Network: Fully connected layers to approximate Q-values.
+**Pour commencer**
+**Prérequis**
 
-Replay Buffer: Store past moves for batch training.
+* Python 3.8+
+* pip
+* TensorFlow / Keras
+* pygame
+* NumPy
+* TensorBoard
 
-🚀 Getting Started
-Prerequisites
-Python 3.8+
-pip
-TensorFlow / Keras
-pygame
 
-NumPy
+**Fichier requirements.txt**
 
-TensorBoard
+C’est un fichier texte qui liste toutes les bibliothèques Python nécessaires au projet. En exécutant la commande `pip install -r requirements.txt`, toutes ces dépendances sont automatiquement installées, ce qui facilite la configuration de l’environnement de travail.
 
-Install dependencies:
+## Guide de démarrage
 
+1. **Installer les dépendances**
+
+Ouvre un terminal dans le dossier du projet et exécute :
+```
 pip install -r requirements.txt
+```
 
-🛠️ Future Improvements
+2. **Lancer le projet**
+pour lancer le jeu exécutez le fichier principal `main.py` 
 
-Integrate convolutional neural networks for spatial learning.
 
-Implement curriculum learning to train on smaller grids first.
-
-Web-based UI using Flask or PyScript.
-
-Save and load training checkpoints.
